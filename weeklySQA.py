@@ -79,8 +79,15 @@ class excelHelper() :
         wb.close()
         #
         #
-        shutil.rmtree(self._top_path,True)
-        os.makedirs(self._top_path)
+        try :
+            shutil.rmtree(self._top_path,True)
+            #os.rmdir(self._top_path)
+            pass
+        except Exception as e:
+            print(e)
+            exit(-1)
+            pass
+        os.makedirs(self._top_path,exist_ok=True)
         #
         for gf,gs in [(self._group_task_file,self._group_task_sheet),(self._group_bug_file,self._group_bug_sheet)]:
             for gp,filename in gf.items() :
@@ -439,11 +446,12 @@ class ztHelper() :
         LEFT JOIN zt_project P ON P.id = B.project
         LEFT JOIN zt_module M ON M.id = B.module
         LEFT JOIN zt_product PD ON PD.id = B.product 
-        LEFT JOIN zt_user U ON U.account = B.resolvedBy
+        LEFT JOIN zt_user U ON U.account = A.actor
         LEFT JOIN zt_build BB ON BB.id = B.resolvedBuild
         WHERE 1=1
         AND A.objectType='bug' AND A.action IN ('closed','activated')
         AND A.date BETWEEN %s AND %s AND U.role = 'qa' 
+        ORDER BY B.id
         """
         _bugsVerified = self._queryDB(sql,[self._startDate,self._endDate])
         self._user2BugVerified = {}
@@ -704,8 +712,8 @@ def main() :
     # 准备
     save_dir = 'D:\\test\\py3'
     template_file = save_dir + '\\TEMP-开发任务检查表.xlsx'
-    start_date = date(2018,1,24).strftime('%Y%m%d')
-    end_date = date(2018,4,30).strftime('%Y%m%d')    
+    start_date = date(2018,3,31).strftime('%Y%m%d')
+    end_date = date(2018,4,6).strftime('%Y%m%d')    
     print('导出报表根目录 : {0}'.format(save_dir))
     print('模板文件 : {0}'.format(os.path.join(template_file)))
     print('报表周期为 : {0} - {1}'.format(start_date,end_date))
