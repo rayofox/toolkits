@@ -1,5 +1,5 @@
 # coding:utf-8
-import os,sys,shutil
+import os,sys,shutil,re
 import pymysql 
 import html
 from openpyxl import load_workbook
@@ -130,12 +130,19 @@ class excelHelper() :
                 user_workloads = workloads.get(sheetname,None)
                 if not user_workloads : continue 
                 ws = wb[sheetname]
+                # insert new lines
+                ws.insert_rows(3,len(user_workloads))
+                for row in range(len(user_workloads)) : self._copyWorkSheetRow(ws,2,3+row)
+                self._adjustConditionalFormatting(ws)
+                #
                 for workload in user_workloads:
                     row = 1+workload[0]
+                    #if row > 2 :self._copyWorkSheetRow(ws,2,row)
                     for i in range(len(workload)) :
                         col = i+1
                         cell = ws.cell(row,col)
                         cell.value = workload[i] 
+                        pass
                     pass
                 pass
             #
@@ -155,6 +162,11 @@ class excelHelper() :
                 user_bugs = bugs.get(sheetname,None)
                 if not user_bugs : continue 
                 ws = wb[sheetname]
+                # insert new lines
+                ws.insert_rows(3,len(user_bugs))
+                for row in range(len(user_bugs)) : self._copyWorkSheetRow(ws,2,3+row)
+                self._adjustConditionalFormatting(ws)
+                #
                 for bug in user_bugs:
                     row = 1+bug[0]
                     for i in range(len(bug)) :
@@ -181,6 +193,61 @@ class excelHelper() :
                 pass
             pass
         zipFile.close()
+        pass
+    
+    def _adjustConditionalFormatting(self,ws):
+        '''
+        '''
+        ruleCnt = len(ws.conditional_formatting._cf_rules)
+        newRules = {}
+        for i in range(ruleCnt) :
+            k,v = ws.conditional_formatting._cf_rules.popitem()
+            ranges = copy(k.cells.ranges)
+            k.cells.ranges.clear()
+            for r in ranges :
+                res = re.findall('([A-Z]+)(\d+):([A-Z])(\d+)',r.coord)
+                if not res : continue 
+                col,row_start,_,_ = res[0]
+                k.cells.add('{0}{1}:{0}{2}'.format(col,row_start,ws.max_row))
+                pass
+            newRules[k] = v
+            pass
+        ws.conditional_formatting._cf_rules.update(newRules)
+        pass
+    
+    def _copyWorkSheetRow(self,ws,src_row,dst_row) :
+        '''
+        '''
+        for col in range(ws.min_column,1+ws.max_column) :
+            
+            """
+            #
+            cell = ws.cell(dst_row,col)
+            cell_base = ws.cell(src_row,col)
+            cell.font          = copy(cell_base.font )
+            cell.border        = copy(cell_base.border)
+            cell.fill          = copy(cell_base.fill)
+            cell.alignment     = copy(cell_base.alignment)
+            #cell.style         = copy(cell_base.style)
+            cell.number_format = copy(cell_base.number_format)
+            cell.protection    = copy(cell_base.protection)
+            """
+            target_cell = ws.cell(dst_row,col)
+            source_cell = ws.cell(src_row,col)
+            
+            target_cell._value = source_cell._value
+            target_cell.data_type = source_cell.data_type
+
+            if source_cell.has_style:
+                target_cell._style = copy(source_cell._style)
+
+            if source_cell.hyperlink:
+                target_cell._hyperlink = copy(source_cell.hyperlink)
+
+            if source_cell.comment:
+                target_cell.comment = copy(source_cell.comment)            
+            pass
+        pass
     
 class ztHelper() :
     '''
@@ -634,7 +701,7 @@ class ztHelper() :
                         row[3] = '否'
                         pass
                 else :
-                    row[5] += '无验证版本信息'
+                    row[5] += '验证版本未填写'
                     pass
                 user2bugverifed[user].append(row)
                 pass
