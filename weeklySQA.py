@@ -605,7 +605,7 @@ class ztHelper() :
             user2workloads[user] = sorted(v.values(),key=lambda z : z[0])
             
             pass
-        #pprint(user2workloads)
+        pprint(user2workloads)
         
         
         # 
@@ -720,58 +720,6 @@ class ztHelper() :
         '''
         return self._user2bugs    
     
-def test() :
-    base_dir = "d:\\test\\py3"
-    #new_report = [base_dir + "\\开发任务检查表 - java.xlsx"]
-    new_report = [base_dir + "\\测试任务检查表 .xlsx"]
-    print(new_report[0])
-    #return
-    #             写入
-    #wb = Workbook()
-    #ws = wb.active
-    #ws['A1'] = 35
-    #ws.append(["我", "你", "她"])
-    # 保存
-    #wb.save(filename=new_report[0])
-    
-    #               读取
-    wb1 = load_workbook(filename=new_report[0])
-    sheets = wb1.sheetnames  # 获取所有的表格
-    for sheet in sheets : print(sheet)
-    sheets_first = sheets[-1]    # 获取第一个表
-    for sheet in wb1 :
-        print(sheet.title,sheet.sheet_state)
-    ws1 = wb1[sheets_first]
-    
-    #print(ws1.)
-    #ws1.insert_rows(2,5)
-    ws1['B2'] = 'test2'
-    ws1['C2'] = 'test2'
-    ws1['D2'] = '1000'
-    ws1['E2'] = datetime.now().date()
-    ws1['F2'] = 3
-    ws1['G2'] = '是'
-    #print(ws1['G2'].style)
-    #row = ws1.row[17]
-    print(ws1.sheet_format)
-    for s in range(ord('A'),ord('J') ) : 
-        ns = chr(s)
-        
-        ws1['{0}18'.format(ns)].font = copy(ws1['{0}17'.format(ns)].font)
-        ws1['{0}18'.format(ns)].fill = copy(ws1['{0}17'.format(ns)].fill)
-        ws1['{0}18'.format(ns)].border = copy(ws1['{0}17'.format(ns)].border)
-        ws1['{0}18'.format(ns)].number_format = copy(ws1['{0}17'.format(ns)].number_format)
-        
-        ws1['{0}18'.format(ns)].protection = copy(ws1['{0}17'.format(ns)].protection)
-        ws1['{0}18'.format(ns)].alignment = copy(ws1['{0}17'.format(ns)].alignment)
-        ws1['{0}18'.format(ns)].style = copy(ws1['{0}17'.format(ns)].style)
-        
-        ws1['{0}18'.format(ns)].value = copy(ws1['{0}17'.format(ns)].value)
-        
-    #ws1['B18'] = ws1['B17']
-    wb1.save(filename=new_report[0])
-    
-    pass
 
 def main() :
     '''
@@ -779,8 +727,8 @@ def main() :
     # 准备
     save_dir = 'D:\\test\\py3'
     template_file = save_dir + '\\TEMP-开发任务检查表.xlsx'
-    start_date = date(2018,3,31).strftime('%Y%m%d')
-    end_date = date(2018,4,6).strftime('%Y%m%d')    
+    start_date = date(2018,4,7).strftime('%Y%m%d')
+    end_date = date(2018,4,13).strftime('%Y%m%d')    
     print('导出报表根目录 : {0}'.format(save_dir))
     print('模板文件 : {0}'.format(os.path.join(template_file)))
     print('报表周期为 : {0} - {1}'.format(start_date,end_date))
