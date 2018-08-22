@@ -558,7 +558,8 @@ class ztHelper() :
         #
         d_tasks = { task['任务ID'] : task for task in self._tasks }
         for wl in self._workloads:
-            task = d_tasks[wl['task']]
+            task = d_tasks.get(wl['task'],None)
+            if not task : continue
             #pprint(wl)
             #pprint(task)
             #
@@ -725,10 +726,13 @@ def main() :
     '''
     '''
     # 准备
-    save_dir = 'D:\\test\\py3'
-    template_file = save_dir + '\\TEMP-开发任务检查表.xlsx'
-    start_date = date(2018,4,7).strftime('%Y%m%d')
-    end_date = date(2018,4,13).strftime('%Y%m%d')    
+    save_dir = '.'
+    template_file = os.path.join(save_dir , 'TEMP-开发任务检查表.xlsx')
+    start_date = date(2018,8,11).strftime('%Y%m%d')
+    end_date = date(2018,8,17).strftime('%Y%m%d')
+    if len(sys.argv) > 2 :
+        [start_date,end_date] = sys.argv[1:]
+        pass
     print('导出报表根目录 : {0}'.format(save_dir))
     print('模板文件 : {0}'.format(os.path.join(template_file)))
     print('报表周期为 : {0} - {1}'.format(start_date,end_date))
