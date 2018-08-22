@@ -10,6 +10,10 @@ from pprint import pprint
 from functools import wraps
 import time,zipfile
 
+if sys.version_info.major < 3 :
+    print("Python3 is required!!")
+    sys.exit(1)
+    pass
 def timeit(f):
     @wraps(f)
     def wrapper_function(*args, **kwargs):
